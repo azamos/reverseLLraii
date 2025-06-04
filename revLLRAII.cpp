@@ -184,6 +184,7 @@ bool test1()
         l1.remove(i);
     }
     l1.print();
+    std::cout << "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
     std::cout << "TEST1: l1 size = " << l1.size();
     return l1.size() == 0 && Node::getConstructionCounter() == Node::getDestructorCounter();
 }
@@ -209,6 +210,7 @@ bool test2()
         l2.remove(i);
     }
     l2.print();
+    std::cout << "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
     std::cout << "TEST2: l2 size = " << l2.size();
     return l2.size() == 0 && Node::getConstructionCounter() == Node::getDestructorCounter();
 }
@@ -259,13 +261,14 @@ bool test3()
     l3.print();
     /*Note to self: if I change the number of deletions != insertions in one of the tests,
     the destructor counter won't match the destructor counter*/
+    std::cout << "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
     std::cout << "TEST3: l3 size = " << l3.size();
-    return l3.size() == 0 && Node::getConstructionCounter() == Node::getDestructorCounter();
+    return l3.isEmpty() && Node::getConstructionCounter() == Node::getDestructorCounter();
 }
 
 int main()
 {
-    int score = SIZE1;
+    int score = SIZE2;
     if (!test1())
     {
         std::cout << std::endl
