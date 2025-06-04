@@ -110,6 +110,21 @@ public:
         return true;
     }
 
+    void reverse()
+    {
+        std::unique_ptr<Node> prev;
+        std::unique_ptr<Node> curr = std::move(head);
+        std::unique_ptr<Node> next;
+        while (curr)
+        {
+            next = std::move(curr->releaseNext());
+            curr->setNext(std::move(prev));
+            prev = std::move(curr);
+            curr = std::move(next);
+        }
+        head = std::move(prev);
+    }
+
     bool isEmpty() const
     {
         return head == nullptr;
@@ -147,21 +162,30 @@ public:
     }
 };
 
-constexpr int SIZE1 = 100;
+constexpr int SIZE1 = 10;
+constexpr int SIZE2 = 100;
+constexpr int SIZE3 = 1000;
 
 bool test1()
 {
     std::cout << std::endl
-              << "Starting test1 : inserting 1,...,100";
+              << "Starting test1 : inserting 1,...,10";
     std::cout << std::endl
-              << "list should print 100,99,....,1";
+              << "list should print 10,9,....,1";
     LinkedList l1;
     for (int i = 1; i <= SIZE1; i++)
     {
         l1.insert(i);
     }
     l1.print();
-    return l1.size() == SIZE1 && l1.size() == Node::getConstructionCounter() && !Node::getDestructorCounter();
+    std::cout << "\nRemoving all elements. List should be empty";
+    for (int i = 1; i <= SIZE1; i++)
+    {
+        l1.remove(i);
+    }
+    l1.print();
+    std::cout << "TEST1: l1 size = " << l1.size();
+    return l1.size() == 0 && Node::getConstructionCounter() == Node::getDestructorCounter();
 }
 
 bool test2()
@@ -171,7 +195,7 @@ bool test2()
     std::cout << std::endl
               << "list should print 100,99,....,1";
     LinkedList l2;
-    for (int i = 1; i <= SIZE1; i++)
+    for (int i = 1; i <= SIZE2; i++)
     {
         l2.insert(i);
     }
@@ -180,12 +204,63 @@ bool test2()
               << "Removing 100,...,1";
     std::cout << std::endl
               << "list should print: 'List is empty. Nothing to print.' ";
-    for (int i = SIZE1; i > 0; i--)
+    for (int i = SIZE2; i > 0; i--)
     {
         l2.remove(i);
     }
     l2.print();
+    std::cout << "TEST2: l2 size = " << l2.size();
     return l2.size() == 0 && Node::getConstructionCounter() == Node::getDestructorCounter();
+}
+
+bool test3()
+{
+    std::cout << std::endl
+              << "Starting test3 : inserting 1,...,1000";
+    std::cout << std::endl
+              << "list should print 1000,999,....,1";
+    LinkedList l3;
+    for (int i = 1; i <= SIZE3; i++)
+    {
+        l3.insert(i);
+    }
+    l3.print();
+    std::cout << std::endl
+              << "Reversing List...";
+    std::cout << std::endl
+              << "list should print: 1,...,999,1000 ";
+    l3.reverse();
+    l3.print();
+    std::cout << std::endl
+              << "Removing 1000,...,501";
+    std::cout << std::endl
+              << "list should print: 1,...,499,500 ";
+    for (int i = SIZE3; i > SIZE3 / 2; i--)
+    {
+        l3.remove(i);
+    }
+    l3.print();
+    std::cout << std::endl
+              << "Reversing List...";
+    std::cout << std::endl
+              << "list should print: 500,499,...,1 ";
+    l3.reverse();
+    l3.print();
+    std::cout << std::endl
+              << "Removing 500,...,1";
+    std::cout << std::endl
+              << "list should print: empty list ";
+    for (int i = SIZE3 / 2; i > 0; i--)
+    {
+        l3.remove(i);
+    }
+    l3.print();
+    l3.reverse();
+    l3.print();
+    /*Note to self: if I change the number of deletions != insertions in one of the tests,
+    the destructor counter won't match the destructor counter*/
+    std::cout << "TEST3: l3 size = " << l3.size();
+    return l3.size() == 0 && Node::getConstructionCounter() == Node::getDestructorCounter();
 }
 
 int main()
@@ -195,21 +270,28 @@ int main()
     {
         std::cout << std::endl
                   << "Test 1 failed";
-        score -= 50;
+        score -= 10;
     }
     if (!test2())
     {
         std::cout << std::endl
                   << "Test 2 failed";
-        score -= 50;
+        score -= 20;
     }
-    if (score == SIZE1)
+    if (!test3())
+    {
+        std::cout << std::endl
+                  << "Test 3 failed";
+        score -= 70;
+    }
+    if (score == SIZE2)
         std::cout << std::endl
                   << "All tests passed. Score is: " << score;
     else
     {
         std::cout << std::endl
                   << "Some tests failed. Score is " << score;
+        std::cout << "\nconstructior counter = " << Node::getConstructionCounter() << "\ndestructor counter " << Node::getDestructorCounter();
     }
     return 0;
 }
